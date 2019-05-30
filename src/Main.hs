@@ -1,3 +1,5 @@
+{-# LANGUAGE LambdaCase #-}
+
 module Main where
 
 import qualified Data.Map as M 
@@ -28,9 +30,8 @@ walk l d = do
   let paths = fmap (d </>) things
   foldM go l paths
   where 
-    go accum filePath = do 
-      stat <- tryIO $ getFileStatus filePath
-      case stat of 
+    go accum filePath = 
+      (tryIO $ getFileStatus filePath) >>= \case 
         Left _ -> pure accum
         Right stat' -> 
           if isDirectory stat'
