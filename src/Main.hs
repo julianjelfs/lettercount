@@ -16,8 +16,8 @@ main :: IO ()
 main = putStrLn "hello"
 
 prettyPrint :: Letters -> [(Char, Int)]
-prettyPrint letters = 
-  reverse $ sortOn (\(_, n) -> n) $ M.toList letters 
+prettyPrint = 
+  reverse . sortOn snd . M.toList 
   
 count :: FilePath -> IO [(Char, Int)]
 count p = prettyPrint <$> walk M.empty p
