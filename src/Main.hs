@@ -8,11 +8,19 @@ import System.FilePath.Posix (takeExtension)
 import System.Posix.Files (getFileStatus, isDirectory)
 import Control.Monad (filterM, join, foldM)
 import Control.Exception.Safe
+import Data.List (sortOn)
 
 type Letters = Map Char Int
 
 main :: IO ()
 main = putStrLn "hello"
+
+prettyPrint :: Letters -> [(Char, Int)]
+prettyPrint letters = 
+  reverse $ sortOn (\(_, n) -> n) $ M.toList letters 
+  
+count :: FilePath -> IO [(Char, Int)]
+count p = prettyPrint <$> walk M.empty p
 
 walk :: Letters -> FilePath -> IO Letters
 walk l d = do 
