@@ -7,6 +7,7 @@ import System.FilePath ((</>))
 import System.FilePath.Posix (takeExtension)
 import System.Posix.Files (getFileStatus, isDirectory)
 import Control.Monad (filterM, join, foldM)
+import Control.Exception.Safe
 
 type Letters = Map Char Int
 
@@ -20,22 +21,25 @@ walk l d = do
   foldM go l paths
   where 
     go accum filePath = do 
-      stat <- getFileStatus filePath
-      if isDirectory stat 
-      then walk accum filePath
-      else 
-        if validFile filePath 
-        then groupLetters accum <$> fileSymbols filePath
-        else pure accum
+      stat <- tryIO $ getFileStatus filePath
+      case stat of 
+        Left _ -> pure accum
+        Right stat' -> 
+          if isDirectory stat'
+          then walk accum filePath
+          else 
+            if validFile filePath 
+            then groupLetters accum <$> fileSymbols filePath
+            else pure accum
 
 validFile :: FilePath -> Bool 
 validFile = flip elem exts . takeExtension
 
 exts :: [String]
-exts = [".ts", ".tsx"]
+exts = [".ts", ".tsx", ".go"]
       
 symbols :: String 
-symbols = "!\"£$%^&*()`[]{}@#'=+-_"
+symbols = "!\"£$%^&*()`[]{}@#'=+-_|/"
 
 groupLetters :: Letters -> String -> Letters
 groupLetters  = 
