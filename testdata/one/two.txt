@@ -1,0 +1,9 @@
+function someDummyCode(arg: String) {
+  // this is some pretend code 
+  setTimeout(() => {
+    console.log(`yo yo`);
+  }, 100);
+  
+  return `Hello ${arg}`;
+}
+
