@@ -33,13 +33,10 @@ walk l d = do
     go accum filePath = 
       (tryIO $ getFileStatus filePath) >>= \case 
         Left _ -> pure accum
-        Right stat' -> 
-          if isDirectory stat'
-          then walk accum filePath
-          else 
-            if validFile filePath 
-            then groupLetters accum <$> fileSymbols filePath
-            else pure accum
+        Right stat' 
+          | isDirectory stat' -> walk accum filePath
+          | validFile filePath -> groupLetters accum <$> fileSymbols filePath
+          | otherwise -> pure accum
 
 validFile :: FilePath -> Bool 
 validFile = flip elem exts . takeExtension
